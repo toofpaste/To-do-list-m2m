@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using ToDoList.Controllers;
+using ToDoList.Models;
 
 namespace ToDoList.Controllers
 {
@@ -8,7 +11,8 @@ namespace ToDoList.Controllers
     [HttpGet("/")]
     public ActionResult Index()
     {
-      return View();
+      List<Item> testList = new List<Item>();
+      return View(testList);
     }
 
   }
