@@ -30,12 +30,20 @@ namespace ToDoList.Models
       _instances.Clear();
     }
     public static List<Category> GetAll()
-   {
-     return _instances;
-   }
-   public static Category Find(int searchId)
+    {
+      return _instances;
+    }
+    public static Category Find(int searchId)
     {
       return _instances[searchId-1];
+    }
+    public List<Item> GetItems()
+    {
+      return _items;
+    }
+    public void AddItem(Item item)
+    {
+      _items.Add(item);
     }
   }
 }
