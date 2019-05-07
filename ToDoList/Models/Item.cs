@@ -1,4 +1,4 @@
-
+using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
@@ -7,18 +7,28 @@ namespace ToDoList.Models
   public class Item
   {
     private string _description;
+    private DateTime _dueDate;
     private int _id;
 
-    public Item (string description, int id = 0)
+    public Item (string description, DateTime dueDate, int id = 0)
     {
       _description = description;
+      _dueDate = dueDate;
       _id = id;
+    }
+    public DateTime GetDate()
+    {
+      return _dueDate;
     }
 
     public string GetDescription()
     {
       return _description;
     }
+    public void SetDueDate(DateTime dueDate)
+  {
+    _dueDate = dueDate;
+  }
 
     public void SetDescription(string newDescription)
     {
@@ -36,13 +46,14 @@ namespace ToDoList.Models
       MySqlConnection conn = DB.Connection();
       conn.Open();
       MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"SELECT * FROM items;";
+      cmd.CommandText = @"SELECT * FROM items ORDER BY dueDate ASC;";
       MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
       while(rdr.Read())
       {
         int itemId = rdr.GetInt32(0);
         string itemDescription = rdr.GetString(1);
-        Item newItem = new Item(itemDescription, itemId);
+        DateTime dueDate = rdr.GetDateTime(2);
+        Item newItem = new Item(itemDescription, dueDate, itemId);
         allItems.Add(newItem);
       }
       conn.Close();
@@ -80,12 +91,14 @@ namespace ToDoList.Models
       var rdr = cmd.ExecuteReader() as MySqlDataReader;
       int itemId = 0;
       string itemDescription = "";
-      while (rdr.Read())
-      {
+      // while (rdr.Read())
+      // {
+      rdr.Read();
         itemId = rdr.GetInt32(0);
         itemDescription = rdr.GetString(1);
-      }
-      Item foundItem= new Item(itemDescription, itemId);
+        DateTime dueDate = rdr.GetDateTime(2);
+        Item foundItem = new Item(itemDescription, dueDate, itemId);
+      // }
       conn.Close();
       if (conn != null)
       {
@@ -105,6 +118,7 @@ namespace ToDoList.Models
         Item newItem = (Item) otherItem;
         bool idEquality = (this.GetId() == newItem.GetId());
         bool descriptionEquality = (this.GetDescription() == newItem.GetDescription());
+        bool dueDateEquality = (this.GetDate() == newItem.GetDate());
         return (idEquality && descriptionEquality);
       }
     }
@@ -114,11 +128,15 @@ namespace ToDoList.Models
       MySqlConnection conn = DB.Connection();
       conn.Open();
       var cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"INSERT INTO items (description) VALUES (@ItemDescription);";
+      cmd.CommandText = @"INSERT INTO items (description, dueDate) VALUES (@ItemDescription, @ItemDueDate);";
       MySqlParameter description = new MySqlParameter();
       description.ParameterName = "@ItemDescription";
       description.Value = this._description;
+      MySqlParameter dueDate = new MySqlParameter();
+      dueDate.ParameterName = "@ItemDueDate";
+      dueDate.Value = this._dueDate;
       cmd.Parameters.Add(description);
+      cmd.Parameters.Add(dueDate);
       cmd.ExecuteNonQuery();
       _id = (int) cmd.LastInsertedId;
       conn.Close();

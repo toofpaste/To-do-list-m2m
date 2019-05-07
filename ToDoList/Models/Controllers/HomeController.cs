@@ -11,8 +11,7 @@ namespace ToDoList.Controllers
     [HttpGet("/")]
     public ActionResult Index()
     {
-      List<Item> testList = new List<Item>();
-      return View(testList);
+      return View();
     }
 
   }
