@@ -46,7 +46,7 @@ namespace ToDoList.Models
       MySqlConnection conn = DB.Connection();
       conn.Open();
       MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"SELECT * FROM items ORDER BY dueDate ASC;";
+      cmd.CommandText = @"SELECT * FROM `items` ORDER BY `dueDate`  ASC;";
       MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
       while(rdr.Read())
       {
@@ -94,10 +94,10 @@ namespace ToDoList.Models
       // while (rdr.Read())
       // {
       rdr.Read();
-        itemId = rdr.GetInt32(0);
-        itemDescription = rdr.GetString(1);
-        DateTime dueDate = rdr.GetDateTime(2);
-        Item foundItem = new Item(itemDescription, dueDate, itemId);
+      itemId = rdr.GetInt32(0);
+      itemDescription = rdr.GetString(1);
+      DateTime dueDate = rdr.GetDateTime(2);
+      Item foundItem = new Item(itemDescription, dueDate, itemId);
       // }
       conn.Close();
       if (conn != null)
