@@ -9,16 +9,22 @@ namespace ToDoList.Models
     private string _description;
     private DateTime _dueDate;
     private int _id;
+    private int _categoryId;
 
-    public Item (string description, DateTime dueDate, int id = 0)
+    public Item (string description, DateTime dueDate, int categoryId, int id = 0)
     {
       _description = description;
       _dueDate = dueDate;
       _id = id;
+      _categoryId = categoryId;
     }
     public DateTime GetDate()
     {
       return _dueDate;
+    }
+    public int GetCategoryId()
+    {
+      return _categoryId;
     }
 
     public string GetDescription()
@@ -53,7 +59,8 @@ namespace ToDoList.Models
         int itemId = rdr.GetInt32(0);
         string itemDescription = rdr.GetString(1);
         DateTime dueDate = rdr.GetDateTime(2);
-        Item newItem = new Item(itemDescription, dueDate, itemId);
+        int itemCategoryId = rdr.GetInt32(3);
+        Item newItem = new Item(itemDescription, dueDate, itemCategoryId, itemId);
         allItems.Add(newItem);
       }
       conn.Close();
@@ -97,7 +104,8 @@ namespace ToDoList.Models
       itemId = rdr.GetInt32(0);
       itemDescription = rdr.GetString(1);
       DateTime dueDate = rdr.GetDateTime(2);
-      Item foundItem = new Item(itemDescription, dueDate, itemId);
+      int catId = rdr.GetInt32(3);
+      Item foundItem = new Item(itemDescription, dueDate, catId, itemId);
       // }
       conn.Close();
       if (conn != null)
@@ -119,32 +127,63 @@ namespace ToDoList.Models
         bool idEquality = (this.GetId() == newItem.GetId());
         bool descriptionEquality = (this.GetDescription() == newItem.GetDescription());
         bool dueDateEquality = (this.GetDate() == newItem.GetDate());
-        return (idEquality && descriptionEquality);
+        bool categoryEquality = this.GetCategoryId() == newItem.GetCategoryId();
+        return (idEquality && descriptionEquality && categoryEquality);
       }
     }
+
+
+        public void Edit(string newDescription)
+        {
+          MySqlConnection conn = DB.Connection();
+          conn.Open();
+          var cmd = conn.CreateCommand() as MySqlCommand;
+          cmd.CommandText = @"UPDATE items SET description = @newDescription WHERE id = @searchId;";
+          MySqlParameter searchId = new MySqlParameter();
+          searchId.ParameterName = "@searchId";
+          searchId.Value = _id;
+          cmd.Parameters.Add(searchId);
+          MySqlParameter description = new MySqlParameter();
+          description.ParameterName = "@newDescription";
+          description.Value = newDescription;
+          cmd.Parameters.Add(description);
+          cmd.ExecuteNonQuery();
+          _description = newDescription; // <--- This line is new!
+          conn.Close();
+          if (conn != null)
+          {
+            conn.Dispose();
+          }
+        }
 
     public void Save()
     {
       MySqlConnection conn = DB.Connection();
       conn.Open();
       var cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"INSERT INTO items (description, dueDate) VALUES (@ItemDescription, @ItemDueDate);";
+      cmd.CommandText = @"INSERT INTO items (description, dueDate, category_id) VALUES (@ItemDescription,  @ItemDueDate, @CategoryId);";
       MySqlParameter description = new MySqlParameter();
       description.ParameterName = "@ItemDescription";
       description.Value = this._description;
       MySqlParameter dueDate = new MySqlParameter();
+      MySqlParameter category_id = new MySqlParameter();
+      category_id.ParameterName = "@CategoryId";
       dueDate.ParameterName = "@ItemDueDate";
+      category_id.Value = this._categoryId;
       dueDate.Value = this._dueDate;
+      cmd.Parameters.Add(category_id);
       cmd.Parameters.Add(description);
       cmd.Parameters.Add(dueDate);
       cmd.ExecuteNonQuery();
       _id = (int) cmd.LastInsertedId;
+      _categoryId = (int) cmd.LastInsertedId;
       conn.Close();
       if (conn != null)
       {
         conn.Dispose();
       }
     }
+
 
   }
 }
