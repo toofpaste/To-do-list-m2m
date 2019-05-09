@@ -26,17 +26,17 @@ namespace ToDoList.Controllers
       return View(model);
     }
 
-    [HttpPost("/categories/{categoryId}/items/{itemId}/DeleteAll")]
+    [HttpPost("/categories/{categoryId}/items/{itemId}/delete-all")]
     public ActionResult DeleteAll()
     {
       Item.ClearAll();
       return View();
     }
 
-  
 
-    [HttpPost("/categories/{categoryId}/items/{itemId}/Delete")]
-    public ActionResult DeleteAll(int categoryId, int itemId)
+
+    [HttpPost("/categories/{categoryId}/items/{itemId}/delete")]
+    public ActionResult DeleteItem(int categoryId, int itemId)
     {
       Item item = Item.Find(itemId);
       item.Delete();

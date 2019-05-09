@@ -58,8 +58,8 @@ namespace ToDoList.Models
       {
         int itemId = rdr.GetInt32(0);
         string itemDescription = rdr.GetString(1);
-        DateTime dueDate = rdr.GetDateTime(2);
-        int itemCategoryId = rdr.GetInt32(3);
+        DateTime dueDate = rdr.GetDateTime(3);
+        int itemCategoryId = rdr.GetInt32(2);
         Item newItem = new Item(itemDescription, dueDate, itemCategoryId, itemId);
         allItems.Add(newItem);
       }
@@ -103,8 +103,8 @@ namespace ToDoList.Models
       rdr.Read();
       itemId = rdr.GetInt32(0);
       itemDescription = rdr.GetString(1);
-      DateTime dueDate = rdr.GetDateTime(3);
-      int catId = rdr.GetInt32(2);
+      DateTime dueDate = rdr.GetDateTime(2);
+      int catId = rdr.GetInt32(3);
       Item foundItem = new Item(itemDescription, dueDate, catId, itemId);
       // }
       conn.Close();
