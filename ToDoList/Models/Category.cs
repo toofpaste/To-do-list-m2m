@@ -112,8 +112,8 @@ namespace ToDoList.Models
   {
     int itemId = rdr.GetInt32(0);
     string itemDescription = rdr.GetString(1);
-    DateTime dd = rdr.GetDateTime(2);
-    int itemCategoryId = rdr.GetInt32(3);
+    DateTime dd = rdr.GetDateTime(3);
+    int itemCategoryId = rdr.GetInt32(2);
     Item newItem = new Item(itemDescription, dd, itemCategoryId, itemId);
     allCategoryItems.Add(newItem);
   }

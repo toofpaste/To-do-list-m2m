@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Models;
 using System.Collections.Generic;
+using System;
 
 namespace ToDoList.Controllers
 {
@@ -25,11 +26,26 @@ namespace ToDoList.Controllers
       return View(model);
     }
 
-    [HttpPost("/items/delete")]
+    [HttpPost("/categories/{categoryId}/items/{itemId}/DeleteAll")]
     public ActionResult DeleteAll()
     {
       Item.ClearAll();
       return View();
+    }
+
+  
+
+    [HttpPost("/categories/{categoryId}/items/{itemId}/Delete")]
+    public ActionResult DeleteAll(int categoryId, int itemId)
+    {
+      Item item = Item.Find(itemId);
+      item.Delete();
+      Dictionary<string, object> model = new Dictionary<string, object>();
+      Category foundCategory = Category.Find(categoryId);
+      List<Item> categoryitems = foundCategory.GetItems();
+      model.Add("items", categoryitems);
+      model.Add("category", foundCategory);
+      return View(model);
     }
 
     [HttpGet("/categories/{categoryId}/items/{itemId}/edit")]

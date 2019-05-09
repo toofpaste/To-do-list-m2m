@@ -103,8 +103,8 @@ namespace ToDoList.Models
       rdr.Read();
       itemId = rdr.GetInt32(0);
       itemDescription = rdr.GetString(1);
-      DateTime dueDate = rdr.GetDateTime(2);
-      int catId = rdr.GetInt32(3);
+      DateTime dueDate = rdr.GetDateTime(3);
+      int catId = rdr.GetInt32(2);
       Item foundItem = new Item(itemDescription, dueDate, catId, itemId);
       // }
       conn.Close();
@@ -151,6 +151,24 @@ namespace ToDoList.Models
           _description = newDescription; // <--- This line is new!
           conn.Close();
           if (conn != null)
+          {
+            conn.Dispose();
+          }
+        }
+
+        public void Delete()
+        {
+          MySqlConnection conn = DB.Connection();
+          conn.Open();
+          var cmd = conn.CreateCommand() as MySqlCommand;
+          cmd.CommandText = @"DELETE FROM items WHERE id = @thisId;";
+          MySqlParameter searchId = new MySqlParameter();
+          searchId.ParameterName = "@thisId";
+          searchId.Value = _id;
+          cmd.Parameters.Add(searchId);
+          cmd.ExecuteNonQuery();
+          conn.Close();
+          if(conn != null)
           {
             conn.Dispose();
           }
